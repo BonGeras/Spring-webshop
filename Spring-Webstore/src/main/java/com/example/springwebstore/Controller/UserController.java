@@ -29,6 +29,13 @@ public class UserController {
         return "user";
     }
 
+    @GetMapping
+    public String userList(Model model) {
+        //if (true) throw new RuntimeException("test of ErrorHandler");
+        model.addAttribute("users", userService.getAll());
+        return "userList";
+    }
+
     @PostMapping("/new")
     public String saveUser(UserDTO userDTO, Model model) {
         if (userService.save(userDTO)) {
@@ -39,17 +46,9 @@ public class UserController {
         }
     }
 
-    @GetMapping
-    public String userList(Model model) {
-        model.addAttribute("users", userService.getAll());
-        return "userList";
-    }
-
     @GetMapping("/profile")
     public String profileUser(Model model, Principal principal) {
-        if (principal == null) {
-            throw new RuntimeException("You are not authorized");
-        }
+        if (principal == null) throw new RuntimeException("you are not authorized");
         User user = userService.findByName(principal.getName());
 
         UserDTO dto = UserDTO.builder()
@@ -62,11 +61,9 @@ public class UserController {
 
     @PostMapping("/profile")
     public String updateProfileUser(UserDTO dto, Model model, Principal principal) {
-        if (principal == null || !Objects.equals(principal.getName(), dto.getUsername())) {
-            throw new RuntimeException("You are not authorized");
-        }
-        if (dto.getPassword() != null
-                && !dto.getPassword().isEmpty()
+        if (principal == null || !Objects.equals(principal.getName(), dto.getUsername()))
+            throw new RuntimeException("you are not authorized");
+        if (dto.getPassword() != null && !dto.getPassword().isEmpty()
                 && !Objects.equals(dto.getPassword(), dto.getMatchingPassword())) {
             model.addAttribute("user", dto);
             return "profile";

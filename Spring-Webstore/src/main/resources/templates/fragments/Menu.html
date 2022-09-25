@@ -5,15 +5,15 @@
     <title>Title</title>
 </head>
 <body>
-<div id="nav-menu" width="100%">
+<table id="nav-menu" width="100%">
     <tr>
         <td align="center">
             <table>
                 <tr>
-                    <td>Menu -></td>
+                    <td> Menu -></td>
                     <td><a th:href="@{/}">Home</a></td>
                     <td><a th:href="@{/products}">Products</a></td>
-                    <td sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER')"><a th:href="@{/users}">Users</a></td>
+                    <td sec:authorize="hasAnyAuthority('ADMIN','MANAGER')"><a th:href="@{/users}">Users</a></td>
                     <td sec:authorize="isAuthenticated()"><a th:href="@{/bucket}">Bucket</a></td>
                 </tr>
             </table>
@@ -21,20 +21,21 @@
         <td align="right">
             <div sec:authorize="isAuthenticated()">
                 <div>
-                    Hello, <a th:href="@{/users/profile}"><span sec:authentication="principal.username">Bill</span></a>
+                    Hello,<a th:href="@{users/profile}"><span sec:authentication="principal.username">Bill</span></a>
                 </div>
                 <div>
-                    <a th:href="@{/logout}">Logout</a>
+                    <a th:href="@{/logout}">Log out</a>
                 </div>
             </div>
 
             <div sec:authorize="!isAuthenticated()">
                 <div>
-                    Hello, Unknown. Please <a th:href="@{/login}">Login</a>
+                    Hello,Unknown.Please,<a th:href="@{/login}">Log in</a>
                 </div>
             </div>
         </td>
     </tr>
-</div>
+</table>
+
 </body>
 </html>

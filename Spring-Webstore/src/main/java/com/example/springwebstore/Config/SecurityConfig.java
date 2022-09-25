@@ -20,23 +20,23 @@ import javax.persistence.Basic;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(securedEnabled = true)
+@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true, jsr250Enabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private UserService userService;
 
     @Autowired
-
     public void setUserService(UserService userService) {
         this.userService = userService;
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+
         auth.authenticationProvider(authenticationProvider());
     }
 
-    @Basic
-    private AuthenticationProvider authenticationProvider() {
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider auth = new DaoAuthenticationProvider();
         auth.setUserDetailsService(userService);
         auth.setPasswordEncoder(passwordEncoder());
@@ -52,8 +52,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/users").hasAnyAuthority(Role.ADMIN.name(), Role.MANAGER.name())
-                .antMatchers("/users/new").hasAuthority(Role.ADMIN.name())
-
+                .antMatchers("/users/new").hasAnyAuthority(Role.ADMIN.name())
                 .anyRequest().permitAll()
                 .and()
                 .formLogin()

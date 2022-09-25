@@ -7,6 +7,7 @@ import com.example.springwebstore.Data.Product;
 import com.example.springwebstore.Data.User;
 import com.example.springwebstore.Repository.BucketRepository;
 import com.example.springwebstore.Repository.ProductRepository;
+import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
@@ -16,21 +17,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Service
 public class BucketServiceImpl implements BucketService {
-
     private final BucketRepository bucketRepository;
     private final ProductRepository productRepository;
     private final UserService userService;
 
-    public BucketServiceImpl(final BucketRepository bucketRepository, final ProductRepository productRepository, final UserService userService) {
+    public BucketServiceImpl(BucketRepository bucketRepository,
+                             ProductRepository productRepository,
+                             UserService userService
+    ) {
         this.bucketRepository = bucketRepository;
         this.productRepository = productRepository;
         this.userService = userService;
     }
 
     @Override
-    @Transactional
+    @javax.transaction.Transactional
     public Bucket createBucket(User user, List<Long> productIds) {
+
         Bucket bucket = new Bucket();
         bucket.setUser(user);
         List<Product> productList = getCollectRefProductsByIds(productIds);
@@ -44,12 +49,29 @@ public class BucketServiceImpl implements BucketService {
                 .collect(Collectors.toList());
     }
 
+
     @Override
-    public void addProduct(Bucket bucket, List<Long> productIds) {
+    @Transactional
+    public void addProducts(Bucket bucket, List<Long> productIds) {
         List<Product> products = bucket.getProducts();
-        List<Product> newProductList = products == null ? new ArrayList<>() : new ArrayList<>(products);
-        newProductList.addAll(getCollectRefProductsByIds(productIds));
-        bucket.setProducts(newProductList);
+        List<Product> newProductsList = products == null ? new ArrayList<>() : new ArrayList<>(products);
+        newProductsList.addAll(getCollectRefProductsByIds(productIds));
+        bucket.setProducts(newProductsList);
+        bucketRepository.save(bucket);
+    }
+
+    @Override
+    @Transactional
+    public void remoteProducts(Bucket bucket, List<Long> productIds) {
+        List<Product> products = bucket.getProducts();
+        List<Product> newProductsList = new ArrayList<>();
+        List<Product> remoteProducts = new ArrayList<>(getCollectRefProductsByIds(productIds));
+        for (Product p : products) {
+            if (!remoteProducts.contains(p)) {
+                newProductsList.add(p);
+            }
+        }
+        bucket.setProducts(newProductsList);
         bucketRepository.save(bucket);
     }
 
@@ -59,24 +81,22 @@ public class BucketServiceImpl implements BucketService {
         if (user == null || user.getBucket() == null) {
             return new BucketDTO();
         }
-
         BucketDTO bucketDTO = new BucketDTO();
         Map<Long, BucketDetailDTO> mapByProductId = new HashMap<>();
-
         List<Product> products = user.getBucket().getProducts();
-        for (Product product : products) {
-            BucketDetailDTO detail = mapByProductId.get(product.getId());
+        for (Product p : products) {
+            BucketDetailDTO detail = mapByProductId.get(p.getId());
             if (detail == null) {
-                mapByProductId.put(product.getId(), new BucketDetailDTO(product));
+                mapByProductId.put(p.getId(), new BucketDetailDTO(p));
             } else {
                 detail.setAmount(detail.getAmount().add(new BigDecimal(1.0)));
-                detail.setSum(detail.getSum() + Double.valueOf(product.getPrice().toString()));
+                detail.setSum(detail.getSum() + Double.valueOf(p.getPrice().toString()));
             }
-        }
 
+        }
         bucketDTO.setBucketDetails(new ArrayList<>(mapByProductId.values()));
         bucketDTO.aggregate();
-
         return bucketDTO;
     }
+
 }

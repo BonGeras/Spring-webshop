@@ -13,7 +13,6 @@ CREATE TABLE users
     name      varchar(255),
     password  varchar(255),
     role      varchar(255),
-    bucket_id int8,
     PRIMARY KEY (id)
 );
 
@@ -37,9 +36,6 @@ ALTER TABLE IF EXISTS buckets
    ADD CONSTRAINT buckets_fk_user
    FOREIGN KEY (user_id) REFERENCES users;
 
-ALTER TABLE IF EXISTS users
-    ADD CONSTRAINT users_fk_bucket
-    FOREIGN KEY (bucket_id) REFERENCES buckets;
 
 
 --CATEGORY

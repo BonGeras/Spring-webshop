@@ -45,7 +45,18 @@ public class ProductServiceImpl implements ProductService {
             Bucket newBucket = bucketService.createBucket(user, Collections.singletonList(productId));
             userService.save(user);
         } else {
-            bucketService.addProduct(bucket, Collections.singletonList(productId));
+            bucketService.addProducts(bucket, Collections.singletonList(productId));
         }
+    }
+
+    @Override
+    public void removeFromUserBucket(Long productId, String username) {
+        User user = userService.findByName(username);
+        if (user == null) {
+            throw new RuntimeException("User not found. " + username);
+        }
+        Bucket bucket = user.getBucket();
+        if (bucket == null) return;
+        else bucketService.remoteProducts(bucket, Collections.singletonList(productId));
     }
 }

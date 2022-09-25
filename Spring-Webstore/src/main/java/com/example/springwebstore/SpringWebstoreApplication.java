@@ -7,7 +7,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
 public class SpringWebstoreApplication {
-
     public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(SpringWebstoreApplication.class, args);
         PasswordEncoder encoder = context.getBean(PasswordEncoder.class);
