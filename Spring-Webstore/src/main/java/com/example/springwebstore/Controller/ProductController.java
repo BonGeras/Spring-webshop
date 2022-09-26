@@ -3,11 +3,12 @@ package com.example.springwebstore.Controller;
 import com.example.springwebstore.DTO.ProductDTO;
 import com.example.springwebstore.Service.ProductService;
 import com.example.springwebstore.Service.SessionObjectHolder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
@@ -39,5 +40,22 @@ public class ProductController {
         }
         productService.addToUserBucket(id, principal.getName());
         return "redirect:/products";
+    }
+
+    @PostMapping
+    public ResponseEntity<Void> addProduct(ProductDTO dto) {
+        productService.addProduct(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @MessageMapping("/products")
+    public void messageAddProduct(ProductDTO dto) {
+        productService.addProduct(dto);
+    }
+
+    @GetMapping("/{id}")
+    @ResponseBody
+    public ProductDTO getById(@PathVariable Long id) {
+        return productService.getById(id);
     }
 }

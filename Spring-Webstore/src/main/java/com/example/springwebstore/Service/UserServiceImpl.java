@@ -4,7 +4,6 @@ import com.example.springwebstore.DTO.UserDTO;
 import com.example.springwebstore.Data.Role;
 import com.example.springwebstore.Data.User;
 import com.example.springwebstore.Repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,12 +22,13 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder password_encoder;
 
-    public UserServiceImpl(PasswordEncoder a, UserRepository b) {
-        this.password_encoder = a;
-        this.userRepository = b;
+    public UserServiceImpl(PasswordEncoder passwordEncoder, UserRepository repository) {
+        this.password_encoder = passwordEncoder;
+        this.userRepository = repository;
     }
 
     @Override
+    @Transactional
     public boolean save(UserDTO userDTO) {
         if (!Objects.equals(userDTO.getPassword(), userDTO.getMatchingPassword())) {
             throw new RuntimeException("passwords arent equal");
@@ -84,6 +84,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void updateProfile(UserDTO dto) {
         User savedUser = userRepository.findFirstByName(dto.getUsername());
         if (savedUser == null) throw new RuntimeException("not found" + dto.getUsername());

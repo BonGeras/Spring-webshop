@@ -28,4 +28,15 @@ public class OrderDetails {
     private Product product;
     private BigDecimal amount;
     private BigDecimal price;
+
+    public OrderDetails(final Order order, final Product product, final BigDecimal amount, final BigDecimal price) {
+        this.order = order;
+        this.product = product;
+        this.amount = amount;
+        this.price = price;
+    }
+
+    public OrderDetails(Order order, Product key, Long value) {
+
+    }
 }

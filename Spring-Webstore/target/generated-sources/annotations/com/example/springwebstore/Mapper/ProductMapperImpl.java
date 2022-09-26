@@ -2,13 +2,14 @@ package com.example.springwebstore.Mapper;
 
 import com.example.springwebstore.DTO.ProductDTO;
 import com.example.springwebstore.Data.Product;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2022-09-25T14:21:42+0200",
+    date = "2022-09-26T10:31:56+0200",
     comments = "version: 1.5.2.Final, compiler: javac, environment: Java 18.0.2.1 (Oracle Corporation)"
 )
 public class ProductMapperImpl implements ProductMapper {
@@ -19,13 +20,13 @@ public class ProductMapperImpl implements ProductMapper {
             return null;
         }
 
-        Product.ProductBuilder product = Product.builder();
+        Product product = new Product();
 
-        product.id( dto.getId() );
-        product.title( dto.getTitle() );
-        product.price( dto.getPrice() );
+        product.setId( dto.getId() );
+        product.setTitle( dto.getTitle() );
+        product.setPrice( BigDecimal.valueOf( dto.getPrice() ) );
 
-        return product.build();
+        return product;
     }
 
     @Override
@@ -38,7 +39,9 @@ public class ProductMapperImpl implements ProductMapper {
 
         productDTO.setId( product.getId() );
         productDTO.setTitle( product.getTitle() );
-        productDTO.setPrice( product.getPrice() );
+        if ( product.getPrice() != null ) {
+            productDTO.setPrice( product.getPrice().doubleValue() );
+        }
 
         return productDTO;
     }
