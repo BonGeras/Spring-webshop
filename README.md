@@ -1,6 +1,6 @@
 # Spring-webshop
 ## Purpose
-This project was made by me based on guides that I found on the Internet. The main goal of this project was to explore the capabilities of the Spring framework and its extensions/plugins.
+The main goal of this project was to explore the capabilities of the Spring framework and its extensions/plugins.
 ## Technical capabilities of the project
 * Logging in the system 
 * Adding new users
